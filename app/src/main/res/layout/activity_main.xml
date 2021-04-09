@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/login_bg_pic_app"
+    android:orientation="vertical"
+    tools:context=".activity.MainActivity">
+
+    <Button
+        android:visibility="gone"
+        android:id="@+id/test_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="测试"/>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/back_iv"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="10dp"
+            android:src="@mipmap/login_back_pic"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:textSize="@dimen/sp_22"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:text="用户登录"/>
+            <EditText
+                android:id="@+id/userName_et"
+                android:layout_width="280dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="50dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:background="@drawable/edit_shape"
+                android:gravity="center_vertical"
+                android:textSize="@dimen/sp_22"
+                android:textColor="@color/black"
+                android:maxLines="1"
+                android:lines="1"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="tst001"
+                android:hint="输入账号"/>
+
+
+            <EditText
+                android:id="@+id/password_et"
+                android:layout_width="280dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="15dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:background="@drawable/edit_shape"
+                android:gravity="center_vertical"
+                android:textSize="@dimen/sp_22"
+                android:textColor="@color/black"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:lines="1"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:text="888888"
+                android:hint="输入密码"/>
+
+            <TextView
+                android:id="@+id/login_tv"
+                android:layout_width="200dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="30dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:background="@drawable/login_shape"
+                android:gravity="center"
+                android:textSize="@dimen/sp_22"
+                android:textColor="#fff"
+                android:text="登录"/>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+
+
+    <color name="title_color">#2c1e1e</color>
+
+    <color name="buttonColor">#FF4223</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="black_70">#99000000</color>
+    <color name="light_black">#4d4d4d</color>
+    <color name="blue_text">#00aaff</color>
+    <color name="deep_blue_text">#0078ff</color>
+    <color name="light_blue">#a3e0fe</color>
+    <color name="blue_44c1ff">#44C1FF</color>
+    <color name="color_1FB1FF">#1FB1FF</color>
+    <color name="divide_line_color">#E6E6E6</color>
+    <color name="left_sort_bg">#e6ffffff</color>
+    <color name="gray_broad">#EAEAEA</color>
+    <color name="un_select_mode_solid">#E5F7FF</color>
+    <color name="un_select_mode_stroke">#CCE3EB</color>
+    <color name="red">#ff2323</color>
+    <color name="original_price_color">#999999</color>
+    <color name="deep_gray">#515151</color>
+    <color name="shop_title_color">#00adfe</color>
+    <color name="transtant">#00000000</color>
+    <color name="face_pay_bg">#cccccc</color>
+    <color name="fenge_line">#e6e6e6</color>
+    <color name="unable_gray">#DEE1E6</color>
+    <color name="color_bg_name">#80000000</color>
+    <color name="black_txt">#1A1A1A</color>
+    <color name="gary_broad">#DBDBDB</color>
+    <color name="gray_bg">#f2f2f2</color>
+    <color name="gray_txt">#a8a8a8</color>
+    <color name="board_unselect_color">#e5f7ff</color>
+    <color name="board_select_color">#cceeff</color>
+    <color name="board_unselect_txt_color">#999999</color>
+    <color name="broad_select_txt_color">#4c4c4c</color>
+    <color name="broad_price_color">#b2b2b2</color>
+    <color name="deep_orange">#fe501a</color>
+    <color name="selected_gay">#999999</color>
+    <color name="red_color">#D00505</color>
+    ////////////////tw//////////////////////
+    <color name="home_blue_txt">#191e48</color>
+    <color name="gray_alp">#E6999999</color>
+    <color name="green">#11c849</color>
+    <color name="light_green">#00ffff</color>
+    <color name="tw_red">#c82b11</color>
+    <color name="light_red">#E74540</color>
+    <color name="light_red2">#D75A54</color>
+    <color name="yellow1">#aaa000</color>
+    <color name="yellow">#fBEC00</color>
+    <color name="rfid_bang_color">#00AAFF</color>
+    <color name="deep_blue">#0452C9</color>
+    <color name="gray">#999999</color>
+    <color name="rfid_un_bang_color">#99DDFF</color>
+    <color name="text_secondary">#8A000000</color>
+    <color name="color_f0f0f0">#F0F0F0</color>
+    <color name="color_FD4747">#FD4747</color>
+    //菜品重量设定使用颜色
+    <color name="setting_color_back">#FFEBCD</color>
+    <color name="setting_color_blue">#00AAFF</color>
+    <color name="setting_color_white">#FFFFFF</color>
+    <color name="setting_color_black">#000000</color>
+    <color name="setting_color_orange">#fe501a</color>
+    <color name="setting_color_gray">#80000000</color>
+    <color name="setting_color_bg">#50ffffff</color>
+    <color name="setting_color_xblue">#99DDFF</color>
+    <color name="mr_bg_color">#F5F9FB</color>
+</resources>
