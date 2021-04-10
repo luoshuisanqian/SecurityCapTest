@@ -11,13 +11,15 @@ public class LoginRespon {
     /**
      * accessToken : 用户票据
      * state : 用户的状态
+     * orgId: 组织Id
      * userId : 用户的id
      * username : 用户的姓名
      */
 
     private String accessToken;
     private String state;
-    private String userId;
+    private String orgId="";
+    private String userId="";
     private String username;
 
     public String getAccessToken() {
@@ -34,6 +36,14 @@ public class LoginRespon {
 
     public void setState(String state) {
         this.state = state;
+    }
+
+    public String getOrgId() {
+        return orgId;
+    }
+
+    public void setOrgId(String orgId) {
+        this.orgId = orgId;
     }
 
     public String getUserId() {

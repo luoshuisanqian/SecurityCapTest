@@ -17,6 +17,7 @@ public class MyApplication extends Application {
 	public static int faceSimilarity = 80;
 	public static long subTime = 3000;
 	public static String accessToken = "";//用户票据
+	public static String userId = "";//用户id
 	public void onCreate() {
 		super.onCreate();
 		//初始化OkGo网络配置

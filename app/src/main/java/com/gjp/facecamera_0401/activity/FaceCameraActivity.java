@@ -67,6 +67,7 @@ import com.gjp.facecamera_0401.utils.LogUtils;
 import com.gjp.facecamera_0401.utils.PermissionConstants;
 import com.gjp.facecamera_0401.utils.PermissionUtils;
 import com.gjp.facecamera_0401.utils.ToastUtil;
+import com.gjp.responbean.OneToNRespon;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
@@ -522,53 +523,22 @@ public class FaceCameraActivity extends BaseActivity implements ViewTreeObserver
                     @Override
                     public void onSuccess(Response<String> response) {
                         Toast.makeText(FaceCameraActivity.this, "1:N接口请求成功=="+response.body(), Toast.LENGTH_SHORT).show();
-                        /**
-                         * 人脸识别成功, 等待2s,调用安全帽检测接口
-                         */
-                        notifyBottom(2);
-
-
-
-                        CheckOneImgQualityRequest bean = new CheckOneImgQualityRequest();
-                        String pathName = FaceServer.SELF_DEFAULT_SAVE_FILE + File.separator + "imgs" + File.separator + "face_live" + ".jpg";
-                        String imgBase64 = ImageUtils.BitmapToString(pathName);
-                        bean.setImgBase64(imgBase64);
-                        String jsonStr = GsonUtil.GsonString(bean);
-                        LogUtils.i("jsonStr ===检测是否带安全帽====" + jsonStr);
-                        //post请求body
-                        RequestBody requestBody = RequestBody.create(MediaType.parse(
-                                "application/json"), jsonStr);
-                        OkGo.<String>post(API.BASE_URL + API.FACE_SECURITY_MAO)
-                                .headers("accessToken", MyApplication.accessToken)
-                                .upRequestBody(requestBody)
-                                .execute(new StringCallback() {
-                                    @Override
-                                    public void onSuccess(Response<String> response) {
-                                        promptDialog.dismissImmediately();
-                                        String respon = response.body();
-
-                                        Toast.makeText(FaceCameraActivity.this, "安全帽检测接口请求成功=="+respon, Toast.LENGTH_LONG).show();
-                                        String status = "0";
-                                        if (!respon.contains("st_helmet_style_type_none")) {//不包含是“已配戴
-                                            status = "0";
-                                        } else {//未佩戴
-                                            status = "1";
-                                        }
-
-                                        Intent intent = new Intent(FaceCameraActivity.this, SecurityCapActivity.class);
-                                        intent.putExtra("status", status);
-                                        startActivity(intent);
-                                    }
-
-                                    @Override
-                                    public void onError(Response<String> response) {
-                                        super.onError(response);
-                                        promptDialog.dismissImmediately();
-                                        ToastUtil.show(FaceCameraActivity.this, API.NETWORK_ERROR);
-                                    }
-                                });
-
-
+                        OneToNRespon bean1 = GsonUtil.GsonToBean(response.body(), OneToNRespon.class);
+                        OneToNRespon.ResultBean resultBean = bean1.getResult();//result
+                        OneToNRespon.TargetVoBean targetVoBean = bean1.getTargetVo();//targetVo
+                        if (resultBean == null || targetVoBean == null) {
+                            promptDialog.dismissImmediately();
+							startActivity(new Intent(FaceCameraActivity.this, OneToNResultActivity.class));
+                        } else {
+							String targetId = targetVoBean.getTargetId();
+							if (MyApplication.userId == targetId) {/***如果id相等**/
+								/**检测是否佩戴安全帽**/
+								TestScurityCap();
+							} else {
+							    promptDialog.dismissImmediately();
+								startActivity(new Intent(FaceCameraActivity.this, OneToNResultActivity.class));
+							}
+						}
 
                     }
 
@@ -584,7 +554,64 @@ public class FaceCameraActivity extends BaseActivity implements ViewTreeObserver
 
     }
 
-    private void initCamera() {
+
+	/**
+	 * 检测是否带安全帽
+	 */
+	private void TestScurityCap() {
+		/**
+		 * 人脸识别成功, 等待2s,调用安全帽检测接口
+		 */
+		notifyBottom(2);
+
+
+
+		CheckOneImgQualityRequest bean = new CheckOneImgQualityRequest();
+		String pathName = FaceServer.SELF_DEFAULT_SAVE_FILE + File.separator + "imgs" + File.separator + "face_live" + ".jpg";
+		String imgBase64 = ImageUtils.BitmapToString(pathName);
+		bean.setImgBase64(imgBase64);
+		String jsonStr = GsonUtil.GsonString(bean);
+		LogUtils.i("jsonStr ===检测是否带安全帽====" + jsonStr);
+		//post请求body
+		RequestBody requestBody = RequestBody.create(MediaType.parse(
+				"application/json"), jsonStr);
+		OkGo.<String>post(API.BASE_URL + API.FACE_SECURITY_MAO)
+				.headers("accessToken", MyApplication.accessToken)
+				.upRequestBody(requestBody)
+				.execute(new StringCallback() {
+					@Override
+					public void onSuccess(Response<String> response) {
+						promptDialog.dismissImmediately();
+						String respon = response.body();
+
+						Toast.makeText(FaceCameraActivity.this, "安全帽检测接口请求成功=="+respon, Toast.LENGTH_LONG).show();
+						String status = "0";
+						if (!respon.contains("st_helmet_style_type_none")) {//不包含是“已配戴
+							status = "0";
+						} else {//未佩戴
+							status = "1";
+						}
+
+						Intent intent = new Intent(FaceCameraActivity.this, SecurityCapActivity.class);
+						intent.putExtra("status", status);
+						startActivity(intent);
+					}
+
+					@Override
+					public void onError(Response<String> response) {
+						super.onError(response);
+						promptDialog.dismissImmediately();
+						ToastUtil.show(FaceCameraActivity.this, API.NETWORK_ERROR);
+					}
+				});
+
+
+
+	}
+
+
+
+	private void initCamera() {
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 

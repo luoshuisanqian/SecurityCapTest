@@ -70,6 +70,7 @@ public class MainActivity extends BaseActivity {
     private String userName = "";
     private String passWord = "";
 
+    private boolean arcRegisterSuccess;
 
     private PromptDialog promptDialog;
 
@@ -100,11 +101,17 @@ public class MainActivity extends BaseActivity {
                 } else if (TextUtils.isEmpty(passWord)) {
                     ToastUtil.show(MainActivity.this, "请输入密码");
                 } else {
-                    //TODO 测试
+
+
+                    if (arcRegisterSuccess) {//如果激活成功
+                        //TODO 测试
 //                    startActivity(new Intent(MainActivity.this, FaceCameraActivity.class));
 
-                    //登录请求
-                    PostLogin();
+                        //登录请求
+                        PostLogin();
+                    } else {
+                        ToastUtil.show(MainActivity.this, "请先联外网激活人脸识别SDK");
+                    }
                 }
             }
         });
@@ -131,6 +138,7 @@ public class MainActivity extends BaseActivity {
                         promptDialog.dismissImmediately();
                         LoginRespon respon = GsonUtil.GsonToBean(response.body(), LoginRespon.class);
                         MyApplication.accessToken = respon.getAccessToken();
+                        MyApplication.userId = respon.getUserId();
                         Toast.makeText(MainActivity.this, "登录成功accessToken==" + response.body(), Toast.LENGTH_LONG).show();
                         startActivity(new Intent(MainActivity.this, FaceCameraActivity.class));
 
@@ -214,8 +222,10 @@ public class MainActivity extends BaseActivity {
                     public void onNext(Integer activeCode) {
                         if (activeCode == ErrorInfo.MOK) {/**激活成功***/
                             Log.e("","激活成功=====");
+                            arcRegisterSuccess = true;
                         } else if (activeCode == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {/***已经激活***/
 //                            showToast(getString(R.string.already_activated));
+                            arcRegisterSuccess = true;
 
                         } else { /**激活失败****/
                             ToastUtil.show(MainActivity.this, getResources().getString(R.string.active_failed) + activeCode);
