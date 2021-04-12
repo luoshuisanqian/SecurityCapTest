@@ -61,6 +61,7 @@ import com.gjp.facecamera_0401.postbean.LoginPostBean;
 import com.gjp.facecamera_0401.postbean.OneToNPostBean;
 import com.gjp.facecamera_0401.promptdialog.PromptDialog;
 import com.gjp.facecamera_0401.utils.API;
+import com.gjp.facecamera_0401.utils.BaseUtils;
 import com.gjp.facecamera_0401.utils.GsonUtil;
 import com.gjp.facecamera_0401.utils.ImageUtils;
 import com.gjp.facecamera_0401.utils.LogUtils;
@@ -68,6 +69,7 @@ import com.gjp.facecamera_0401.utils.PermissionConstants;
 import com.gjp.facecamera_0401.utils.PermissionUtils;
 import com.gjp.facecamera_0401.utils.ToastUtil;
 import com.gjp.responbean.OneToNRespon;
+import com.gjp.responbean.SecurityCapRespon;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
@@ -227,6 +229,7 @@ public class FaceCameraActivity extends BaseActivity implements ViewTreeObserver
 
 
     private PromptDialog promptDialog;
+    private boolean isActivityFocus;//当前页面是否有焦点
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -272,6 +275,23 @@ public class FaceCameraActivity extends BaseActivity implements ViewTreeObserver
         faceMouth_iv = (ImageView) findViewById(R.id.faceMouth_iv);//张嘴
     }
 
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isActivityFocus = true;
+        faceAction = 0;
+        notifyBottom(-1);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        LogUtils.e("onPause=================");
+        isActivityFocus = false;
+
+    }
 
     private void initView() {
         previewView = findViewById(R.id.texture_preview);
@@ -509,8 +529,9 @@ public class FaceCameraActivity extends BaseActivity implements ViewTreeObserver
         OneToNPostBean bean = new OneToNPostBean();
         String pathName = FaceServer.SELF_DEFAULT_SAVE_FILE + File.separator + "imgs" + File.separator + "face_live" + ".jpg";
         String imgBase64 = ImageUtils.BitmapToString(pathName);
-        bean.setImgBase64(imgBase64);
+
         bean.setLibraryId("2");
+        bean.setImgBase64(imgBase64);
         String jsonStr = GsonUtil.GsonString(bean);
         LogUtils.i("jsonStr ===上传活体请求参数====" + jsonStr);
         //post请求body
@@ -522,21 +543,27 @@ public class FaceCameraActivity extends BaseActivity implements ViewTreeObserver
                 .execute(new StringCallback() {
                     @Override
                     public void onSuccess(Response<String> response) {
-                        Toast.makeText(FaceCameraActivity.this, "1:N接口请求成功=="+response.body(), Toast.LENGTH_SHORT).show();
                         OneToNRespon bean1 = GsonUtil.GsonToBean(response.body(), OneToNRespon.class);
                         OneToNRespon.ResultBean resultBean = bean1.getResult();//result
                         OneToNRespon.TargetVoBean targetVoBean = bean1.getTargetVo();//targetVo
+
                         if (resultBean == null || targetVoBean == null) {
                             promptDialog.dismissImmediately();
-							startActivity(new Intent(FaceCameraActivity.this, OneToNResultActivity.class));
+                            Intent intent = new Intent(FaceCameraActivity.this, OneToNResultActivity.class);
+                            intent.putExtra("oneToN_type", "1");//未匹配到人脸
+							startActivity(intent);
                         } else {
-							String targetId = targetVoBean.getTargetId();
-							if (MyApplication.userId == targetId) {/***如果id相等**/
+							String name = targetVoBean.getName();
+                            LogUtils.e("name===========" + name);
+                            LogUtils.e("realname============" + MyApplication.realname);
+							if (name.equals(MyApplication.realname)) {/***如果id相等**/
 								/**检测是否佩戴安全帽**/
 								TestScurityCap();
 							} else {
 							    promptDialog.dismissImmediately();
-								startActivity(new Intent(FaceCameraActivity.this, OneToNResultActivity.class));
+							    Intent intent = new Intent(FaceCameraActivity.this, OneToNResultActivity.class);
+							    intent.putExtra("oneToN_type", "2");//不是本人
+								startActivity(intent);
 							}
 						}
 
@@ -582,11 +609,12 @@ public class FaceCameraActivity extends BaseActivity implements ViewTreeObserver
 					@Override
 					public void onSuccess(Response<String> response) {
 						promptDialog.dismissImmediately();
-						String respon = response.body();
-
-						Toast.makeText(FaceCameraActivity.this, "安全帽检测接口请求成功=="+respon, Toast.LENGTH_LONG).show();
+                        SecurityCapRespon respon = GsonUtil.GsonToBean(response.body(), SecurityCapRespon.class);
+                        //判断是否佩戴安全帽
+                        String helmetStyle = respon.getHelmetStyle();
+                        LogUtils.e("helmetStyle=============" + helmetStyle);
 						String status = "0";
-						if (!respon.contains("st_helmet_style_type_none")) {//不包含是“已配戴
+						if (!helmetStyle.equals("st_helmet_style_type_none")) {//不等于是“已配戴
 							status = "0";
 						} else {//未佩戴
 							status = "1";
@@ -631,29 +659,38 @@ public class FaceCameraActivity extends BaseActivity implements ViewTreeObserver
                     Integer liveness = livenessMap.get(requestId);
                     //不做活体检测的情况，直接搜索
                     if (!livenessDetect) {
-                        searchFace(faceFeature, requestId);
+//                        searchFace(faceFeature, requestId);
                     }
                     //活体检测通过，搜索特征
                     else if (liveness != null && liveness == LivenessInfo.ALIVE) {
+
                         if (facePreviewDistance >= MyApplication.minFaceWidth) {//如果大于等于最小人脸宽度
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (faceAction == 0) {
-                                        notifyBottom(0);
-                                        faceAction++;//1
+                                    if (isActivityFocus) {/**并且当前页面有焦点****/
+                                        if (faceAction == 0) {
+                                            notifyBottom(0);
+                                            faceAction++;//1
 
-                                        if (registerStatus == REGISTER_STATUS_DONE) {
-                                            registerStatus = REGISTER_STATUS_READY;
-                                        }
+                                            if (registerStatus == REGISTER_STATUS_DONE) {
+                                                registerStatus = REGISTER_STATUS_READY;
+                                            }
 //                                        faceActionTime = System.currentTimeMillis();
 
+                                        }
                                     }
+
 
                                 }
                             });
 
 //                            searchFace(faceFeature, requestId);
+                            requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
+                            if (faceHelper == null) {} else {
+                                faceHelper.setName(requestId, "VISITOR " + requestId);
+                            }
+                            retryRecognizeDelayed(requestId);
                         } else {
                             requestFeatureStatusMap.put(requestId, RequestFeatureStatus.FAILED);
                             if (faceHelper == null) {} else {
@@ -726,7 +763,7 @@ public class FaceCameraActivity extends BaseActivity implements ViewTreeObserver
                     // 非活体，重试
                     if (liveness == LivenessInfo.NOT_ALIVE) {
                         if (faceHelper == null) {} else {
-                            faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_ALIVE"));
+//                            faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_ALIVE"));
                         }
                         // 延迟 FAIL_RETRY_INTERVAL 后，将该人脸状态置为UNKNOWN，帧回调处理时会重新进行活体检测
                         retryLivenessDetectDelayed(requestId);
@@ -743,7 +780,7 @@ public class FaceCameraActivity extends BaseActivity implements ViewTreeObserver
                         }
 
                         if (faceHelper == null) {} else {
-                            faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, msg));
+//                            faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, msg));
                         }
                         retryLivenessDetectDelayed(requestId);
                     } else {
@@ -929,20 +966,22 @@ public class FaceCameraActivity extends BaseActivity implements ViewTreeObserver
     private void registerFace(final byte[] nv21, final List<FacePreviewInfo> facePreviewInfoList) {
 
         if (faceAction == 2) {
-            long currentTime = System.currentTimeMillis();
-            long subTime = currentTime - faceActionTime;
-            if (subTime > API.WAIT_TIME_2000) {
-                notifyBottom(1);//展示"人脸识别中"
-                faceActionTime = System.currentTimeMillis();
-                faceAction++;//3
+            if (isActivityFocus) {
+                long currentTime = System.currentTimeMillis();
+                long subTime = currentTime - faceActionTime;
+                if (subTime > API.WAIT_TIME_2000) {
+                    notifyBottom(1);//展示"人脸识别中"
+                    faceActionTime = System.currentTimeMillis();
+                    faceAction++;//3
 
-
-                /**
-                 * 请求人脸识别中接口
-                 */
-                //UpdateImgBase64
-                UpdateImgBase64();
+                    /**
+                     * 请求人脸识别中接口
+                     */
+                    //UpdateImgBase64
+                    UpdateImgBase64();
+                }
             }
+
         } /*else if (faceAction == 3) {
             long currentTime = System.currentTimeMillis();
             long subTime = currentTime - faceActionTime;
@@ -1262,7 +1301,7 @@ public class FaceCameraActivity extends BaseActivity implements ViewTreeObserver
 
                         } else {
                             if (faceHelper == null) {} else {
-                                faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+//                                faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                             }
                             retryRecognizeDelayed(requestId);
                         }
@@ -1272,7 +1311,7 @@ public class FaceCameraActivity extends BaseActivity implements ViewTreeObserver
                     public void onError(Throwable e) {
                         try {
                             if (requestId == null) {} else {
-                                faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
+//                                faceHelper.setName(requestId, getString(R.string.recognize_failed_notice, "NOT_REGISTERED"));
                                 retryRecognizeDelayed(requestId);
                             }
                         } catch (Exception e1) {

@@ -139,7 +139,7 @@ public class MainActivity extends BaseActivity {
                         LoginRespon respon = GsonUtil.GsonToBean(response.body(), LoginRespon.class);
                         MyApplication.accessToken = respon.getAccessToken();
                         MyApplication.userId = respon.getUserId();
-                        Toast.makeText(MainActivity.this, "登录成功accessToken==" + response.body(), Toast.LENGTH_LONG).show();
+                        MyApplication.realname = respon.getRealname();//用户名
                         startActivity(new Intent(MainActivity.this, FaceCameraActivity.class));
 
                     }

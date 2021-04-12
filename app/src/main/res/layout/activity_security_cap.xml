@@ -9,12 +9,20 @@
     tools:context=".activity.SecurityCapActivity">
 
 
+
+    <ImageView
+        android:id="@+id/securityStatus_iv"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@mipmap/right_icon"/>
     <TextView
-        android:id="@+id/capStatus_tv"
+        android:id="@+id/securityStatus_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/sp_42"
-        android:textColor="@color/black"/>
+        android:layout_marginTop="10dp"
+        android:textColor="@color/green"
+        android:textSize="@dimen/sp_22"
+        android:text="安全帽已佩戴"/>
 
 
 </LinearLayout>

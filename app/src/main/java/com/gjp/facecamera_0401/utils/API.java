@@ -7,7 +7,8 @@ package com.gjp.facecamera_0401.utils;
  */
 
 public interface API {
-    String BASE_URL = "http://10.19.1.96:30080";
+//    String BASE_URL = "http://10.19.1.96:30080";
+    String BASE_URL = "http://183.129.144.67:30080";
 
     //登录接口
     String LOGIN_URL = "/senseguard-oauth2/api/v1/login";
@@ -19,5 +20,5 @@ public interface API {
 
     String NETWORK_ERROR = "连接服务器失败,请检查网络或稍后重试!";
     int WAIT_TIME_3000 = 3000;
-    int WAIT_TIME_2000 = 3000;
+    int WAIT_TIME_2000 = 2000;
 }

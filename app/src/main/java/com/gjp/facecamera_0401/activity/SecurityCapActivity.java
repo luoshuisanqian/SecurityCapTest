@@ -1,26 +1,37 @@
 package com.gjp.facecamera_0401.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.os.Bundle;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gjp.facecamera_0401.R;
 
 public class SecurityCapActivity extends BaseActivity {
 
-	private TextView capStatus_tv;
+	private ImageView securityStatus_iv;
+	private TextView securityStatus_tv;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_security_cap);
-		capStatus_tv = (TextView) findViewById(R.id.capStatus_tv);
+		securityStatus_iv = (ImageView) findViewById(R.id.securityStatus_iv);
+		securityStatus_tv = (TextView) findViewById(R.id.securityStatus_tv);
+
+
+
 		String status = getIntent().getStringExtra("status");
 		if (status.equals("0")) {
-			capStatus_tv.setText("安全帽已佩戴");
+			securityStatus_iv.setImageResource(R.mipmap.right_icon);
+			securityStatus_tv.setText("人脸识别成功，安全帽已佩戴");
+			securityStatus_tv.setTextColor(ContextCompat.getColor(SecurityCapActivity.this, R.color.green));
 		} else {
-			capStatus_tv.setText("安全帽未佩戴");
+			securityStatus_iv.setImageResource(R.mipmap.error_icon);
+			securityStatus_tv.setText("人脸识别成功，安全帽未佩戴");
+			securityStatus_tv.setTextColor(ContextCompat.getColor(SecurityCapActivity.this, R.color.red));
 		}
 	}
 }

@@ -18,6 +18,7 @@ public class MyApplication extends Application {
 	public static long subTime = 3000;
 	public static String accessToken = "";//用户票据
 	public static String userId = "";//用户id
+	public static String realname = "";//用户名
 	public void onCreate() {
 		super.onCreate();
 		//初始化OkGo网络配置
